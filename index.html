@@ -72,24 +72,21 @@
       ['估算完工工期', 'EDAC', 'BDAC/SPI'],
     ];
 
-    // 生成一个问题
+    // 生成一个题目
     function getRandomProblem(model) {
       const [name, value, formula] = model;
       const list = [
-        [`${name}如何表示?(例：CV)`, value],
-        [`${name}公式?(例：EV-AC)`, formula],
-        [`${value}指?(例：成本偏差)`, name],
-        [`${value}公式?(例：CV=EV-AC)`, formula],
-        [`${formula}计算的是?(例：成本偏差)`, name],
+        [`${name}如何表示?(例：CV)`, [value]],
+        [`${name}公式?(例：EV-AC)`, [formula, `${value}=${formula}`]],
+        [`${value}指?(例：成本偏差)`, [name]],
+        [`${value}公式?(例：CV=EV-AC)`, [formula, `${value}=${formula}`]],
+        [`${formula}计算的是?(例：成本偏差)`, [name, value]],
       ]
 
       return list[parseInt(Math.random() * list.length, 10)];
     }
 
-    function start() {
-      generateProblem();
-    }
-
+    // 为页面生成一个问题
     function generateProblem() {
       answerElement.value = '';
       infoElement.innerHTML = '';
@@ -108,13 +105,18 @@
       problemElement.innerHTML = problem[0];
     }
 
+    // 提交问题
     submitElement.addEventListener('click', () => {
-      if (answerElement.value === problem[1]) {
+      // 答案转为大写方便匹配
+      const submitValue = answerElement.value.toUpperCase();
+      if (problem[1].includes(submitValue)) {
+        // 答对
         infoElement.innerHTML = '正确! 进入下一题';
         setTimeout(generateProblem, 2000);
         successNumber ++;
       } else {
-        infoElement.innerHTML = `错误, 答案是<span style="color: red;">${problem[1]}</span>, 5秒后自动进入下一题`;
+        // 答错
+        infoElement.innerHTML = `错误, 答案是<span style="color: red;">${problem[1][0]}</span>, 5秒后自动进入下一题`;
         setTimeout(generateProblem, 5000);
         errorNumber ++;
       }
@@ -122,12 +124,13 @@
       console.log('答对', successNumber, '题, 答错', errorNumber, '题!');
     });
 
+    // 输入框回车也相当于提交
     answerElement.addEventListener('keydown', (event) => {
       event.keyCode === 13 && submitElement.click();
     });
 
     // 开始答题！
-    start();
+    generateProblem();
   </script>
 </body>
 </html>
