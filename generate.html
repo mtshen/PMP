@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>PMP报考 - 自动生成项目经验</title>
+  <style>
+    #Examples {
+      display: flex;
+      flex-direction: row;
+    }
+
+    #Examples > div, #result {
+      border: 1px solid #ccc;
+      margin: 20px;
+      padding: 10px;
+    }
+
+    #Examples > div.active {
+      border: 1px solid #000;
+    }
+
+    .exampleTitle, .exampleContent > p, #result > p {
+      margin: 0;
+    }
+
+    .submit {
+      text-align: center;
+      width: 100px;
+      height: 30px;
+      border: none;
+      padding: 0;
+      margin: 0;
+      margin-top: 30px;
+      background: #FFC107;
+    }
+    </style>
+</head>
+<body>
+  <h1>选择一个例子以生成</h1>
+  <div id="Examples">
+  </div>
+  <button class="submit">生成</button>
+  <div id="result"></div>
+  <div>如果不满意, 可以重复点击生成! 词库有限, 可以适当修改一下</div>
+  <script>
+    const examplesElement = document.getElementById('Examples');
+    const resultElement = document.getElementById('result');
+    const submitElement = document.querySelector('.submit');
+
+    const templateInfo = {
+      viewName: {
+        projectGoals: '项目目标',
+        position: '职位',
+        startUp: '启动过程组',
+        plan: '规划过程组',
+        implement: '执行过程组',
+        monitor: '监控过程组',
+        ending: '收尾过程组',
+        approval: '客套话(项目获得客户认可)',
+        experience: '得到的经验(更好地控制工程质量)',
+      },
+      randomContent: {
+        projectGoals: ['项目目标自己写一下'],
+        position: [
+          'project manager',
+          'project Leader',
+        ],
+        startUp: [
+          'perform project assessment',
+          'define the high-levelscope of the project',
+          'perform key stakeholder analysis',
+          'identify and documenthigh-level risks',
+          'assumptions, and constraints',
+          'develop and obtain approval for the project charter',
+        ],
+        plan: [ 
+          'assess detailed project requirements',
+          'constraints and assumptions with stakeholders',
+          'create the work breakdown structure',
+          'develop budget, human resource management, communication, procurement, quality management, change management, and risk management plans',
+          'present the project plan to the key stakeholders',
+          'conduct a kick-off meeting',
+        ],
+        implement: [
+          'obtain and manage project resources',
+          'execute the tasks as defined in the project plan',
+          'implement the qualitymanagement plan',
+          'implement approved changes according to the change management plan',
+          'implement approved actions by following the risk management plan',
+          'maximize team performance',
+        ],
+        monitor: [
+          'measure project performance using appropriate tools and techniques',
+          'manage changes to the project scope, schedule, and costs',
+          'ensure that project deliverables conform to the quality standards',
+          'update the risk register and risk response plan',
+          'assess corrective actions on  the issue register',
+          'communicate project status to stakeholders',
+        ],
+        ending: [
+          'obtain final acceptance of the project deliverables',
+          'transfer the ownership of deliverables',
+          'obtain financial, legal, and administrative closure',
+          'distribute the final project report',
+          'collate lessons learned',
+          'archive project documents and materials',
+          'measure customersatisfaction',
+        ],
+        approval: [
+          'The project obtains the customer acceptance',
+          'The project obtains the leadership acceptance',
+          'The project obtains the project members acceptance',
+          'The project obtains the company acceptance',
+        ],
+        experience: [
+          'to better control the project quality',
+          'to better project acceptance',
+        ],
+      }
+    }
+      
+    const exampleInfoList = [
+      {
+        title: '基本模板',
+        content: [
+          'The goal of the project $projectGoals As a $position,',
+          'my main responsibility is to $startUp in the initiating process.',
+          '$plan in the planning process,',
+          '$implement in the executing process,',
+          '$monitor in the monitoring process.',
+          '$ending in the closing process.',
+          '$approval,',
+          'I learned $experience.',
+        ],
+      }, {
+        title: '基本模板(术语缩写版)',
+        content: [
+          'The goal of the project $projectGoals As a $position,',
+          'my main responsibility is to $startUp in the IN process.',
+          '$plan in the PL process,',
+          '$implement in the EX process,',
+          '$monitor in the MC process.',
+          '$ending in the CL process.',
+          '$approval,',
+          'I learned $experience',
+        ],
+      }
+    ];
+
+    let selectIndex = 0;
+    
+    function generateSelectExamples() {
+      exampleInfoList.forEach((exampleInfo, index) => {
+        const exampleElement = document.createElement('div');
+        // 创建标题
+        const titleElement = document.createElement('h2');
+        titleElement.innerHTML = exampleInfo.title;
+        titleElement.className = 'exampleTitle';
+        exampleElement.appendChild(titleElement);
+
+        // 创建内容
+        const contentElement = document.createElement('div');
+        contentElement.className = 'exampleContent';
+        let exampleHtml = exampleInfo.content.map((content) => {
+          return `<p>${content}</p>`;
+        }).join('');
+
+        for (const key in templateInfo.viewName) {
+          const value = templateInfo.viewName[key];
+          exampleHtml = exampleHtml.replace(`$${key}`, value);
+        }
+
+        contentElement.innerHTML = exampleHtml;
+        exampleElement.appendChild(contentElement);
+
+        exampleElement.addEventListener('click', () => {
+          selectIndex = index;
+          [...document.querySelectorAll('.active')].forEach((element) => {
+            element.classList.remove('active');
+          });
+          exampleElement.classList.add('active');
+        });
+
+        examplesElement.appendChild(exampleElement);
+      });
+    }
+
+    function resultExample(exampleInfo) {
+      let exampleHtml = exampleInfo.content.map((content) => {
+          return `<p>${content}</p>`;
+      }).join('');
+
+      for (const key in templateInfo.randomContent) {
+        const values = templateInfo.randomContent[key];
+        const value = values[parseInt(Math.random() * values.length, 10)];
+        exampleHtml = exampleHtml.replace(`$${key}`, `<span style="color: red">${value}</span>`);
+      }
+
+      // 生成结果
+      resultElement.innerHTML = exampleHtml;
+    }
+
+    submitElement.addEventListener('click', () => {
+      resultExample(exampleInfoList[selectIndex]);
+    });
+
+    // 创建模板
+    generateSelectExamples();
+  </script>
+</body>
+</html>
